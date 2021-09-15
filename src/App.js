@@ -10,6 +10,13 @@ const getWord = () => {
   return word.toLowerCase();
 };
 
+const isValidKey = (key, word) => {
+  if (!word) return false;
+
+  const result = word.split('').includes(key);
+  return result;
+};
+
 export function App() {
   const [typedKeys, setTypedKeys] = React.useState([]);
   const [validKeys, setValidKeys] = React.useState([]);
@@ -25,6 +32,15 @@ export function App() {
     setTypedKeys(prevTypedKeys =>
       [...prevTypedKeys, key].slice(MAX_TYPED_KEYS * -1)
     );
+
+    if (isValidKey(key, word)) {
+      setValidKeys(prev => {
+        const isValidLength = prev.length <= word.length;
+        const isNextChar = isValidLength && word[prev.length] === key;
+
+        return isNextChar ? [...prev, key] : prev;
+      });
+    }
   };
 
   return (
