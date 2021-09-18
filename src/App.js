@@ -20,11 +20,27 @@ const isValidKey = (key, word) => {
 export function App() {
   const [typedKeys, setTypedKeys] = React.useState([]);
   const [validKeys, setValidKeys] = React.useState([]);
+  const [completedWords, setCompletedWords] = React.useState([]);
   const [word, setWord] = React.useState('');
 
   React.useEffect(() => {
     setWord(getWord());
   }, []);
+
+  React.useEffect(() => {
+    const wordFromValidKeys = validKeys.join('').toLowerCase();
+
+    if (word && word === wordFromValidKeys) {
+      let newWord = null;
+      do {
+        newWord = getWord();
+      } while (completedWords.includes(newWord));
+
+      setWord(newWord);
+      setValidKeys([]);
+      setCompletedWords(prev => [...prev, word]);
+    }
+  }, [word, validKeys, completedWords]);
 
   const handleKeyDown = evt => {
     evt.preventDefault();
@@ -51,9 +67,9 @@ export function App() {
       <div className='typed-keys'>{typedKeys ? typedKeys.join(' ') : null}</div>
       <div className='completed-words'>
         <ol>
-          <li>cidade</li>
-          <li>carro</li>
-          <li>profissional</li>
+          {completedWords.map(word => (
+            <li key={word}>{word}</li>
+          ))}
         </ol>
       </div>
     </div>
