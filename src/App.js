@@ -3,6 +3,7 @@ import { Word } from './components/Word';
 import wordList from './resources/words.json';
 
 const MAX_TYPED_KEYS = 30;
+const WORD_ANIMATION_INTERVAL = 200;
 
 const getWord = () => {
   const index = Math.floor(Math.random() * wordList.length);
@@ -18,18 +19,23 @@ const isValidKey = (key, word) => {
 };
 
 export function App() {
-  const [typedKeys, setTypedKeys] = React.useState([]);
+  const [typedKeys, setTypedKeys] = React.useState(['']);
   const [validKeys, setValidKeys] = React.useState([]);
   const [completedWords, setCompletedWords] = React.useState([]);
   const [word, setWord] = React.useState('');
 
+  const containerRef = React.useRef(null);
+
   React.useEffect(() => {
     setWord(getWord());
+
+    if (containerRef) containerRef.current.focus();
   }, []);
 
   React.useEffect(() => {
     const wordFromValidKeys = validKeys.join('').toLowerCase();
 
+    let timeout = null;
     if (word && word === wordFromValidKeys) {
       let newWord = null;
       do {
@@ -39,7 +45,21 @@ export function App() {
       setWord(newWord);
       setValidKeys([]);
       setCompletedWords(prev => [...prev, word]);
+      timeout = setTimeout(() => {
+        let newWord = null;
+        do {
+          newWord = getWord();
+        } while (completedWords.includes(newWord));
+
+        setWord(newWord);
+        setValidKeys([]);
+        setCompletedWords(prev => [...prev, word]);
+      }, WORD_ANIMATION_INTERVAL);
     }
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [word, validKeys, completedWords]);
 
   const handleKeyDown = evt => {
@@ -60,7 +80,12 @@ export function App() {
   };
 
   return (
-    <div className='container' tabIndex={0} onKeyDown={handleKeyDown}>
+    <div
+      className='container'
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      ref={containerRef}
+    >
       <div className='valid-keys'>
         <Word word={word} validKeys={validKeys} />
       </div>

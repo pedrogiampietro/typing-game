@@ -5,9 +5,11 @@ export function Word({ word, validKeys }) {
   const matched = word.slice(0, joinedKeys.length);
   const remainder = word.slice(joinedKeys.length);
 
+  const matchedClass = joinedKeys === word ? 'matched completed' : 'matched';
+
   return (
     <>
-      <span className='matched'>{matched}</span>
+      <span className={matchedClass}>{matched}</span>
       <span className='remainder'>{remainder}</span>
     </>
   );
