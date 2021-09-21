@@ -4,6 +4,62 @@ import wordList from './resources/words.json';
 
 const MAX_TYPED_KEYS = 30;
 const WORD_ANIMATION_INTERVAL = 200;
+const TIMER_DURATION = 10;
+
+const secondsToTime = total => {
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = Math.round(total % 60);
+
+  const data = hours ? [hours, minutes, seconds] : [minutes, seconds];
+
+  return data.map(v => `0${v}`.slice(-2)).join(':');
+};
+
+const Timer = ({ duration, isRunning, getValue = v => v }) => {
+  const [startDate, setStartDate] = React.useState(null);
+  const [currentDate, setCurrentDate] = React.useState(null);
+
+  React.useEffect(() => {
+    let interval = null;
+
+    if (isRunning) {
+      setStartDate(new Date());
+      interval = setInterval(() => {
+        setCurrentDate(new Date());
+      }, 1000);
+    } else {
+      setStartDate(null);
+      setCurrentDate(null);
+      if (interval) clearInterval(interval);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning]);
+
+  if (!startDate || !currentDate)
+    return <div className='timer'>{secondsToTime(duration)}</div>;
+
+  const time = Number.parseInt(
+    (currentDate.getTime() - startDate.getTime()) / 1000,
+    10
+  );
+  getValue(duration - time);
+  return <div className='timer'>{secondsToTime(duration - time)}</div>;
+};
+
+const Ended = ({ ended, completedWords = [], onRestart = () => {} }) => {
+  if (!ended) return null;
+  return (
+    <div className='ended'>
+      <h2>Time's up</h2>
+      <p>{completedWords.length} completed words.</p>
+      <button onClick={onRestart}>Restart</button>
+    </div>
+  );
+};
 
 const getWord = () => {
   const index = Math.floor(Math.random() * wordList.length);
@@ -23,6 +79,8 @@ export function App() {
   const [validKeys, setValidKeys] = React.useState([]);
   const [completedWords, setCompletedWords] = React.useState([]);
   const [word, setWord] = React.useState('');
+  const [timerRunning, setTimerRunning] = React.useState(false);
+  const [ended, setEnded] = React.useState(false);
 
   const containerRef = React.useRef(null);
 
@@ -62,9 +120,30 @@ export function App() {
     };
   }, [word, validKeys, completedWords]);
 
+  const getTimerValue = v => {
+    if (v > 0) return;
+    setTimerRunning(false);
+    setEnded(true);
+  };
+
+  const onRestart = e => {
+    e.preventDefault();
+    setTypedKeys(['']);
+    setValidKeys([]);
+    setCompletedWords([]);
+    setTimerRunning(false);
+    setEnded(false);
+
+    setWord(getWord());
+  };
+
   const handleKeyDown = evt => {
     evt.preventDefault();
+
+    if (ended) return;
+
     const { key } = evt;
+    if (!timerRunning) setTimerRunning(true);
     setTypedKeys(prevTypedKeys =>
       [...prevTypedKeys, key].slice(MAX_TYPED_KEYS * -1)
     );
@@ -86,6 +165,11 @@ export function App() {
       onKeyDown={handleKeyDown}
       ref={containerRef}
     >
+      <Timer
+        duration={TIMER_DURATION}
+        isRunning={timerRunning}
+        getValue={getTimerValue}
+      />
       <div className='valid-keys'>
         <Word word={word} validKeys={validKeys} />
       </div>
@@ -97,6 +181,11 @@ export function App() {
           ))}
         </ol>
       </div>
+      <Ended
+        ended={ended}
+        completedWords={completedWords}
+        onRestart={onRestart}
+      />
     </div>
   );
 }
