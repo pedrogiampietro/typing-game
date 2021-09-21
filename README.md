@@ -1,5 +1,9 @@
 # Typing-Game 💜
 
+## Preview!
+
+https://typing-game-three-nu.vercel.app/
+
 ## ⚙️ Instalação
 
 ```
