@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@600&display=swap');
 
 * {
   margin: 0;
@@ -9,28 +9,23 @@
 body {
   width: 100%;
   min-height: 100vh;
-
   color: #e1e1e1;
   background-color: #1e1e1e;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  font-family: 'Rubik', 'sans-serif';
+  font-family: 'Rubik', sans-serif;
 }
-
 .container {
   width: 100vw;
   height: 100vh;
-
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
-
 .container:focus {
   outline: none;
 }
@@ -38,10 +33,12 @@ body {
 .container .valid-keys {
   font-size: 10rem;
   font-weight: bold;
-
   min-width: 600px;
-
   border-bottom: solid 2px #fff;
+}
+.container .valid-keys .matched {
+  background-color: #fdf8c5;
+  color: #282c34;
 }
 
 .container .valid-keys .matched.completed {
@@ -52,11 +49,6 @@ body {
   animation: moveDown 200ms ease-in;
 }
 
-.container .valid-keys .matched {
-  background-color: #fdf8c5;
-  color: #282c34;
-}
-
 .container .valid-keys .remainder {
   opacity: 0.5;
 }
@@ -65,32 +57,27 @@ body {
   width: max-content;
   height: 100vh;
   overflow-y: scroll;
-  opacity: 0.5;
-
   position: fixed;
   top: 0;
   right: 0;
-
   text-align: left;
-  padding: 20px 40px 29px 80px;
-
+  padding: 20px 40px 20px 80px;
   font-size: 1.8rem;
   line-height: 2.5rem;
-
+  opacity: 0.5;
   display: flex;
-}
-
-.container .typed-keys {
-  width: 600px;
-  margin-top: 20px;
-
-  font-size: 1.3rem;
-  overflow: hidden;
 }
 
 .container .completed-words ol {
   flex-grow: 1;
   align-self: flex-end;
+}
+
+.container .typed-keys {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  width: 600px;
+  overflow: hidden;
 }
 
 .container .timer {
@@ -99,9 +86,12 @@ body {
 }
 
 .container .ended {
+  width: 600px;
   padding: 60px;
   margin: 20px 0;
   border: dashed 3px #fdf8c5;
+  position: absolute;
+  background-color: black;
 }
 .container .ended h2 {
   color: #fdf8c5;

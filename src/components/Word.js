@@ -1,6 +1,7 @@
+import React from 'react';
+
 export function Word({ word, validKeys }) {
   if (!word) return null;
-
   const joinedKeys = validKeys.join('');
   const matched = word.slice(0, joinedKeys.length);
   const remainder = word.slice(joinedKeys.length);
@@ -14,3 +15,5 @@ export function Word({ word, validKeys }) {
     </>
   );
 }
+
+export default Word;
